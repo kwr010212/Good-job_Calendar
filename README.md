@@ -13,4 +13,4 @@
 - 장지영 : 코드 구현(GUI)
 - 최인호 : 달력 기능
 - 
-  <img src="![KakaoTalk_20251104_130738268_02](https://github.com/user-attachments/assets/cd0a944e-e048-4419-b42a-604160007cde)" width="200" height="200">
+  <img src="!KakaoTalk_20251104_130738268_02.jpg" width="200" height="200">
