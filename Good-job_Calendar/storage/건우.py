@@ -13,4 +13,4 @@ def load_schedule():
             data = [line.strip() for line in f.readlines()]
         return data
     except:
-        return 
+        return []
