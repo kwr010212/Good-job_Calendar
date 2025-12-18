@@ -1,69 +1,120 @@
 import tkinter as tk
+from tkinter import ttk
 
-# -----------------------------
-# 스타일 변수
-# -----------------------------
-COLOR_BG = "#F7F9FC"
-COLOR_NAV = "#3E4A89"
-COLOR_BTN = "#5C6BC0"
-FONT_MAIN = ("맑은 고딕", 12)
+from pages.home import HomePage
+from pages.register import RegisterPage
+from pages.calendar import CalendarPage
+from pages.search import SearchPage
+from pages.timetable import TimetablePage
+from pages.notify import NotifyPage
 
-# -----------------------------
-# 메인 윈도우 생성
-# -----------------------------
-root = tk.Tk()
-root.title("Campus Timeguard")
-root.geometry("1100x700")
-root.configure(bg=COLOR_BG)
 
-# -----------------------------
-# 네비게이션 바 프레임
-# -----------------------------
-nav_frame = tk.Frame(root, bg=COLOR_NAV, width=200)
-nav_frame.pack(side="left", fill="y")
+NAVY = "#0A1F44"
+WHITE = "#FFFFFF"
 
-# -----------------------------
-# 메인 화면 프레임
-# -----------------------------
-main_frame = tk.Frame(root, bg=COLOR_BG)
-main_frame.pack(side="right", fill="both", expand=True)
 
-# -----------------------------
-# 페이지 전환 함수
-# -----------------------------
-def clear_main():
-    for widget in main_frame.winfo_children():
-        widget.destroy()
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
 
-def show_schedule_page():
-    clear_main()
-    tk.Label(main_frame, text="일정 페이지(틀)", font=FONT_MAIN).pack(pady=20)
+        # ===== 기본 창 설정 =====
+        self.title("Campus Calendar")
+        self.geometry("900x600")
+        self.resizable(False, False)
+        self.configure(background=NAVY)
 
-def show_timetable_page():
-    clear_main()
-    tk.Label(main_frame, text="시간표 페이지(틀)", font=FONT_MAIN).pack(pady=20)
+        # ===== 스타일 설정 =====
+        self._set_style()
 
-def show_search_page():
-    clear_main()
-    tk.Label(main_frame, text="검색 페이지(틀)", font=FONT_MAIN).pack(pady=20)
+        # ===== 메인 컨테이너 =====
+        self.container = ttk.Frame(self, style="Main.TFrame")
+        self.container.pack(fill="both", expand=True, padx=20, pady=20)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
-def show_alarm_page():
-    clear_main()
-    tk.Label(main_frame, text="알림 페이지(틀)", font=FONT_MAIN).pack(pady=20)
+        # ===== 페이지(Frame) 관리 =====
+        self.frames = {}
+        self._register_pages()
 
-# -----------------------------
-# 네비게이션 바 버튼
-# -----------------------------
-tk.Button(nav_frame, text="일정", width=15, bg=COLOR_BTN,
-          command=show_schedule_page).pack(pady=10)
+        # 첫 화면
+        self.show("Home")
 
-tk.Button(nav_frame, text="시간표", width=15, bg=COLOR_BTN,
-          command=show_timetable_page).pack(pady=10)
+    def _set_style(self):
+        style = ttk.Style()
+        style.theme_use("default")
 
-tk.Button(nav_frame, text="검색", width=15, bg=COLOR_BTN,
-          command=show_search_page).pack(pady=10)
+        # 전체 앱 배경
+        style.configure(
+            "Main.TFrame",
+            background=NAVY
+        )
 
-tk.Button(nav_frame, text="알림", width=15, bg=COLOR_BTN,
-          command=show_alarm_page).pack(pady=10)
+        # 페이지 카드 (화이트)
+        style.configure(
+            "TFrame",
+            background=WHITE,
+            relief="flat"
+        )
 
-root.mainloop()
+        # 기본 텍스트
+        style.configure(
+            "TLabel",
+            background=WHITE,
+            foreground=NAVY,
+            font=("맑은 고딕", 11)
+        )
+
+        # 제목 텍스트 (앱 타이틀 느낌)
+        style.configure(
+            "Title.TLabel",
+            background=WHITE,
+            foreground=NAVY,
+            font=("맑은 고딕", 20, "bold")
+        )
+
+        # 버튼 (심플한 네이비 텍스트)
+        style.configure(
+            "TButton",
+            background=WHITE,
+            foreground=NAVY,
+            font=("맑은 고딕", 10, "bold"),
+            padding=(14, 8),
+            relief="flat"
+        )
+
+        style.map(
+            "TButton",
+            background=[
+                ("active", WHITE),
+                ("pressed", WHITE)
+            ],
+            foreground=[
+                ("active", NAVY),
+                ("pressed", NAVY)
+            ]
+        )
+
+    def _register_pages(self):
+        pages = {
+            "Home": HomePage,
+            "Register": RegisterPage,
+            "Calendar": CalendarPage,
+            "Search": SearchPage,
+            "Timetable": TimetablePage,
+            "Notify": NotifyPage
+        }
+
+        for name, PageClass in pages.items():
+            frame = PageClass(self.container, self)
+            frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+            self.frames[name] = frame
+
+    def show(self, name):
+        frame = self.frames.get(name)
+        if frame:
+            frame.tkraise()
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
